@@ -894,14 +894,22 @@
   /* Hero grid */
   .hero-grid {
     display: grid;
-    grid-template-columns: 1.3fr 1fr;
-    gap: 56px;
+    grid-template-columns: 1fr;
+    gap: 40px;
     align-items: center;
   }
   .hero-text { min-width: 0; }
   .hero-phone-wrap {
     display: flex;
     justify-content: center;
+  }
+  .hero-phone-wrap .phone-hero { max-width: 280px; margin: 0 auto; }
+  @media (min-width: 721px) {
+    .hero-grid {
+      grid-template-columns: 1.3fr 1fr;
+      gap: 56px;
+    }
+    .hero-phone-wrap .phone-hero { max-width: none; }
   }
 
   /* Steps grid override — to fit phones */
