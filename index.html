@@ -1,0 +1,2291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BuildProof — Construction's only honest protection</title>
+<meta name="description" content="Dispute-grade construction evidence, sealed at capture and verified by payment. The evidence layer for tradespeople, foremen, QSs, developers, and homeowners." />
+
+<!-- Open Graph / share previews -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="BuildProof — Construction's only honest protection" />
+<meta property="og:description" content="Dispute-grade construction evidence, sealed at capture and verified by payment. The evidence layer for tradespeople, foremen, QSs, developers, and homeowners." />
+<meta property="og:url" content="https://buildproof.uk" />
+<meta property="og:image" content="https://buildproof.uk/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="BuildProof — Construction's only honest protection" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://buildproof.uk/og.png" />
+
+<!-- Favicon — the seal -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230F6E56' fill-rule='evenodd'%3E%3Cpath d='M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21zM10.6 15.4l-3.2-3.2 1.4-1.4 1.8 1.8 4.6-4.6 1.4 1.4-6 6z' clip-rule='evenodd'/%3E%3C/svg%3E" />
+
+<!-- Fonts — match the prototype -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --paper: #faf7f0;
+    --paper-2: #f1ede4;
+    --line: #e8e3d6;
+    --line-2: #d8d2c0;
+    --ink-1: #1a1815;
+    --ink-2: #4a463e;
+    --ink-3: #7a7468;
+    --ink-4: #a39d8e;
+    --signal: #0F6E56;
+    --signal-2: #0F6E56;
+    --signal-t: #e1f5ee;
+    --warn: #c97a1f;
+    --warn-t: #faedd9;
+    --go: #4a7c2a;
+    --go-t: #e8f0d9;
+    --stop: #b34040;
+
+    --font-serif: 'Fraunces', 'Times New Roman', serif;
+    --font-sans: 'Inter Tight', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    --max-width: 980px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-sans);
+    color: var(--ink-1);
+    background: var(--paper);
+    line-height: 1.55;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Layout helpers */
+  .wrap {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+  .wrap-narrow {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  /* Type system */
+  .display {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+    color: var(--ink-1);
+  }
+  .serif {
+    font-family: var(--font-serif);
+    letter-spacing: -0.02em;
+    color: var(--ink-1);
+  }
+  .mono {
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+  .overline {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 22px;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.1s, opacity 0.15s;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary {
+    background: var(--ink-1);
+    color: white;
+  }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--ink-1);
+    border: 1.5px solid var(--line-2);
+  }
+  .btn-secondary:hover { border-color: var(--ink-3); }
+
+  /* Section spacing */
+  section {
+    padding: 80px 0;
+  }
+  section + section {
+    border-top: 1px solid var(--line);
+  }
+
+  /* HEADER */
+  header {
+    position: sticky;
+    top: 0;
+    background: rgba(250, 247, 240, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+    z-index: 100;
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 28px;
+    max-width: var(--max-width);
+    margin: 0 auto;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--ink-1);
+  }
+  .brand-mark {
+    width: 26px;
+    height: 26px;
+    color: var(--signal);
+  }
+  .brand-name {
+    font-family: var(--font-serif);
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .header-cta {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-1);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: var(--paper-2);
+    transition: background 0.15s;
+  }
+  .header-cta:hover { background: var(--line); }
+
+  /* HERO */
+  .hero {
+    padding: 100px 0 90px;
+    position: relative;
+  }
+  .hero-eyebrow {
+    margin-bottom: 28px;
+  }
+  .hero-headline {
+    font-size: clamp(40px, 6.5vw, 72px);
+    line-height: 0.98;
+    margin-bottom: 24px;
+    max-width: 850px;
+  }
+  .hero-sub {
+    font-size: 19px;
+    color: var(--ink-2);
+    line-height: 1.5;
+    max-width: 620px;
+    margin-bottom: 36px;
+  }
+  .hero-sub em {
+    font-style: italic;
+    color: var(--ink-2);
+    display: block;
+    margin-top: 10px;
+  }
+  .hero-ctas {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* PROBLEM */
+  .problem {
+    background: var(--paper-2);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .problem-headline {
+    font-size: clamp(28px, 4vw, 42px);
+    margin-bottom: 24px;
+    max-width: 720px;
+  }
+  .problem-body {
+    font-size: 17px;
+    color: var(--ink-2);
+    line-height: 1.6;
+    margin-bottom: 32px;
+    max-width: 700px;
+  }
+  .problem-quote {
+    background: white;
+    border-left: 3px solid var(--warn);
+    padding: 24px 28px;
+    margin: 36px 0;
+    max-width: 680px;
+    border-radius: 0 12px 12px 0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .problem-quote-text {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    font-style: italic;
+    color: var(--ink-1);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    margin-bottom: 14px;
+  }
+  .problem-quote-attr {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+  }
+  .problem-close {
+    font-size: 17px;
+    color: var(--ink-1);
+    font-weight: 500;
+    max-width: 700px;
+  }
+
+  /* WhatsApp chat mockup */
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 56px;
+    align-items: start;
+    margin-top: 8px;
+  }
+  @media (max-width: 720px) {
+    .problem-grid { grid-template-columns: 1fr; gap: 32px; }
+  }
+  .chat-mock {
+    background: #ECE5DD;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px -6px rgba(0,0,0,0.18), 0 1px 2px rgba(0,0,0,0.04);
+    max-width: 380px;
+    margin: 0 auto;
+  }
+  .chat-header {
+    background: #128C7E;
+    color: white;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .chat-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 13px;
+    color: white;
+    flex-shrink: 0;
+  }
+  .chat-header-text {
+    flex: 1;
+    min-width: 0;
+  }
+  .chat-header-title {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.2;
+    margin-bottom: 2px;
+  }
+  .chat-header-meta {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    color: rgba(255,255,255,0.85);
+  }
+  .chat-body {
+    padding: 14px 12px 18px;
+    background:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><circle cx='20' cy='20' r='1' fill='%23d4ccbf' opacity='0.4'/></svg>"),
+      #ECE5DD;
+    background-size: 40px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .chat-bubble {
+    max-width: 78%;
+    padding: 6px 10px 16px;
+    border-radius: 8px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--ink-1);
+    position: relative;
+    word-wrap: break-word;
+  }
+  .chat-bubble-them {
+    background: white;
+    align-self: flex-start;
+    border-top-left-radius: 2px;
+  }
+  .chat-bubble-me {
+    background: #DCF8C6;
+    align-self: flex-end;
+    border-top-right-radius: 2px;
+  }
+  .chat-bubble-name {
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    line-height: 1.2;
+  }
+  .chat-bubble-name-1 { color: #1e88a8; }
+  .chat-bubble-name-2 { color: #b0599a; }
+  .chat-bubble-name-3 { color: #d27e1c; }
+  .chat-bubble-time {
+    font-size: 10px;
+    color: rgba(0,0,0,0.45);
+    position: absolute;
+    bottom: 3px;
+    right: 8px;
+    line-height: 1;
+  }
+  .chat-bubble-emphasis {
+    background: white;
+    border: 2px solid #c97a1f;
+    box-shadow: 0 4px 12px rgba(201, 122, 31, 0.18);
+  }
+  .chat-bubble-text {
+    padding-right: 38px;
+  }
+  .chat-pending {
+    align-self: center;
+    margin-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(0,0,0,0.5);
+    font-style: italic;
+    letter-spacing: 0.04em;
+    padding: 4px 12px;
+  }
+
+  /* HOW IT WORKS */
+  .section-eyebrow {
+    margin-bottom: 14px;
+  }
+  .section-headline {
+    font-size: clamp(32px, 4.5vw, 48px);
+    margin-bottom: 56px;
+    max-width: 720px;
+  }
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 36px;
+    margin-top: 8px;
+  }
+  .step {
+    position: relative;
+  }
+  .step-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--signal);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .step-title {
+    font-family: var(--font-serif);
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--ink-1);
+    margin-bottom: 12px;
+  }
+  .step-body {
+    font-size: 14px;
+    color: var(--ink-2);
+    line-height: 1.6;
+  }
+  .steps-close {
+    margin-top: 56px;
+    font-size: 16px;
+    color: var(--ink-2);
+    font-style: italic;
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    max-width: 700px;
+  }
+
+  /* Operative-first design callout in How it works */
+  .operative-callout {
+    margin-top: 56px;
+    padding-top: 36px;
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 36px;
+    max-width: 880px;
+  }
+  .operative-callout-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--signal);
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .operative-callout-body {
+    font-size: 15px;
+    color: var(--ink-2);
+    line-height: 1.65;
+  }
+  .operative-callout-body strong {
+    color: var(--ink-1);
+    font-weight: 500;
+  }
+  @media (max-width: 720px) {
+    .operative-callout { grid-template-columns: 1fr; gap: 14px; }
+  }
+
+  /* PROTECTION (the manifesto section) */
+  .protection {
+    background: var(--ink-1);
+    color: var(--paper);
+  }
+  .protection .overline {
+    color: rgba(255,255,255,0.5);
+  }
+  .protection-headline {
+    font-size: clamp(34px, 5vw, 56px);
+    color: var(--paper);
+    margin-bottom: 56px;
+    max-width: 820px;
+  }
+  .protection-list {
+    margin-bottom: 56px;
+  }
+  .protection-item {
+    border-top: 1px solid rgba(255,255,255,0.12);
+    padding: 24px 0;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+  .protection-item:last-child {
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+  .protection-claim {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--paper);
+    letter-spacing: -0.02em;
+  }
+  .protection-resolve {
+    font-size: 15px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.55;
+  }
+  .protection-conclusion {
+    margin-top: 56px;
+    max-width: 760px;
+  }
+  .protection-conclusion-bold {
+    font-family: var(--font-serif);
+    font-size: 26px;
+    color: var(--paper);
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    margin-bottom: 18px;
+    font-weight: 500;
+  }
+  .protection-conclusion-body {
+    font-size: 16px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+  }
+
+  /* TRACK RECORD CLAIM */
+  .track-record {
+    background: var(--paper);
+  }
+  .track-record-headline {
+    font-size: clamp(32px, 4.5vw, 48px);
+    margin-bottom: 32px;
+    max-width: 740px;
+  }
+  .track-record-body {
+    font-size: 17px;
+    color: var(--ink-2);
+    line-height: 1.6;
+    max-width: 700px;
+    margin-bottom: 24px;
+  }
+  .track-record-strong {
+    font-size: 17px;
+    color: var(--ink-1);
+    line-height: 1.6;
+    font-weight: 500;
+    max-width: 700px;
+  }
+
+  /* WHO IT'S FOR — role blocks */
+  .roles {
+    background: var(--paper-2);
+  }
+  .role-block {
+    padding: 56px 0;
+    border-bottom: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 56px;
+    align-items: start;
+  }
+  .role-block:last-child {
+    border-bottom: none;
+  }
+  .role-label {
+    position: sticky;
+    top: 100px;
+  }
+  .role-overline {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--signal);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .role-tag {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--ink-1);
+  }
+  .role-question {
+    font-family: var(--font-serif);
+    font-size: clamp(24px, 3vw, 32px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--ink-1);
+    line-height: 1.2;
+    margin-bottom: 22px;
+  }
+  .role-body {
+    font-size: 16px;
+    color: var(--ink-2);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+  .role-close {
+    font-size: 16px;
+    color: var(--ink-1);
+    line-height: 1.6;
+    font-weight: 500;
+  }
+
+  /* TRY DEMO */
+  .try-demo {
+    background: var(--ink-1);
+    color: var(--paper);
+    padding: 100px 0;
+  }
+  .try-demo-headline {
+    font-family: var(--font-serif);
+    font-size: clamp(36px, 5vw, 56px);
+    color: var(--paper);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    margin-bottom: 22px;
+    max-width: 720px;
+    font-weight: 500;
+  }
+  .try-demo-sub {
+    font-size: 18px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.55;
+    margin-bottom: 36px;
+    max-width: 620px;
+  }
+  .btn-demo {
+    background: var(--paper);
+    color: var(--ink-1);
+    padding: 16px 28px;
+    font-size: 16px;
+  }
+  .btn-demo:hover { opacity: 0.95; }
+  .try-demo-meta {
+    margin-top: 22px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 48px 0;
+    background: var(--paper-2);
+    border-top: 1px solid var(--line);
+  }
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .footer-tagline {
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+  .footer-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* Mobile */
+  @media (max-width: 720px) {
+    section { padding: 56px 0; }
+    .hero { padding: 60px 0 56px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .hero-phone { max-width: 280px; margin: 0 auto; }
+    .steps { grid-template-columns: 1fr; gap: 32px; }
+    .protection-item { grid-template-columns: 1fr; gap: 8px; }
+    .role-block { grid-template-columns: 1fr; gap: 16px; padding: 40px 0; }
+    .role-label { position: static; }
+    .role-tag { font-size: 18px; }
+    .header-inner { padding: 14px 22px; }
+    .wrap, .wrap-narrow { padding: 0 22px; }
+  }
+
+  /* ===== PHONE MOCKUP STYLES ===== */
+  .phone {
+    background: #1a1815;
+    border-radius: 36px;
+    padding: 8px;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.06),
+      0 24px 48px -16px rgba(26, 24, 21, 0.25),
+      0 8px 16px -8px rgba(26, 24, 21, 0.12);
+    position: relative;
+  }
+  .phone-screen {
+    background: var(--paper);
+    border-radius: 28px;
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 9 / 19.5;
+  }
+  .phone-notch {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 22px;
+    background: #1a1815;
+    border-radius: 14px;
+    z-index: 10;
+  }
+  .phone-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 24px 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-1);
+  }
+  .phone-status-right {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .phone-content {
+    padding: 16px 18px;
+    overflow: hidden;
+    height: calc(100% - 36px);
+  }
+
+  /* Phone — capture-in-progress hero */
+  .phone-hero {
+    width: 280px;
+  }
+  .ph-screen-id {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    margin-bottom: 16px;
+  }
+  .ph-back {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .ph-overline {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--signal);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .ph-title {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+  .ph-sub {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+    margin-bottom: 16px;
+  }
+  .ph-card {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+  }
+  .ph-card-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .ph-card-row:last-child { margin-bottom: 0; }
+  .ph-photo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+  .ph-photo {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #d8d2c0, #a39d8e);
+    border-radius: 4px;
+    position: relative;
+  }
+  .ph-photo:nth-child(1) { background: linear-gradient(135deg, #e8e3d6, #c0b8a0); }
+  .ph-photo:nth-child(2) { background: linear-gradient(135deg, #d4cab0, #9a8e6e); }
+  .ph-photo:nth-child(3) { background: linear-gradient(135deg, #c8bea0, #8e8060); }
+  .ph-photo-tag {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    font-family: var(--font-mono);
+    font-size: 6px;
+    color: white;
+    background: rgba(0,0,0,0.6);
+    padding: 1px 3px;
+    border-radius: 2px;
+    font-weight: 700;
+  }
+  .ph-meta-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .ph-meta-row:last-child { border-bottom: none; }
+  .ph-meta-label { color: var(--ink-4); }
+  .ph-meta-val { color: var(--ink-1); font-weight: 600; }
+  .ph-cta {
+    background: var(--ink-1);
+    color: white;
+    text-align: center;
+    padding: 11px;
+    border-radius: 10px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 14px;
+  }
+  .ph-seal {
+    color: var(--signal);
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+  .ph-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--go);
+    flex-shrink: 0;
+  }
+
+  /* Small phone — used in steps section */
+  .phone-mini {
+    width: 200px;
+    margin: 0 auto;
+  }
+  .phone-mini .phone-screen {
+    aspect-ratio: 9 / 18;
+  }
+  .phone-mini .phone-content {
+    padding: 12px 14px;
+  }
+  .phone-mini .ph-title { font-size: 17px; }
+  .phone-mini .ph-card { padding: 10px 12px; margin-bottom: 6px; }
+  .phone-mini .phone-status { padding: 12px 20px 4px; font-size: 10px; }
+  .phone-mini .phone-notch { width: 70px; height: 18px; }
+
+  /* Hero grid */
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 56px;
+    align-items: center;
+  }
+  .hero-text { min-width: 0; }
+  .hero-phone-wrap {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Steps grid override — to fit phones */
+  .steps-with-phones {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 36px;
+    margin-top: 8px;
+    align-items: start;
+  }
+  .step-with-phone .phone-mini {
+    margin-bottom: 24px;
+  }
+  @media (max-width: 720px) {
+    .steps-with-phones { grid-template-columns: 1fr; gap: 48px; }
+  }
+
+  /* Pull quote */
+  .pull-quote {
+    margin: 56px 0 0;
+    padding: 32px 0 12px;
+    border-top: 1px solid var(--line);
+  }
+  .pull-quote-text {
+    font-family: var(--font-serif);
+    font-size: clamp(24px, 3.5vw, 32px);
+    font-weight: 500;
+    font-style: italic;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    color: var(--ink-1);
+    max-width: 760px;
+  }
+  .protection .pull-quote {
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+  .protection .pull-quote-text {
+    color: var(--paper);
+  }
+
+  /* Why now section */
+  .why-now {
+    background: var(--paper-2);
+  }
+  .why-now-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 36px;
+    margin-top: 32px;
+  }
+  /* WHY THIS MATTERS NOW — rewritten, prose-led */
+  .why-now {
+    background: var(--paper-2);
+  }
+  .why-now-prose p {
+    font-size: 17px;
+    color: var(--ink-2);
+    line-height: 1.65;
+    margin-bottom: 18px;
+    max-width: 720px;
+  }
+  .why-now-callout {
+    border-left: 3px solid var(--signal);
+    padding: 6px 0 6px 22px;
+    margin-top: 36px;
+    max-width: 760px;
+  }
+  .why-now-callout-bold {
+    font-family: var(--font-serif);
+    font-size: clamp(20px, 2.6vw, 26px);
+    font-weight: 500;
+    color: var(--ink-1);
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+    margin: 0 0 14px;
+  }
+  .why-now-callout-body {
+    font-size: 15px;
+    color: var(--ink-2);
+    line-height: 1.6;
+  }
+  @media (max-width: 720px) {
+    .why-now-grid { grid-template-columns: 1fr; gap: 32px; }
+  }
+
+  /* Track-record licensing pull-quote */
+  .tr-licensing-quote {
+    font-family: var(--font-serif);
+    font-size: clamp(22px, 3vw, 28px);
+    font-weight: 500;
+    font-style: italic;
+    color: var(--ink-1);
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+    margin: 32px 0;
+    padding: 28px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    max-width: 700px;
+  }
+
+  /* Stat strip — Why this matters now */
+  .stat-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px;
+    padding: 28px 0;
+    border-top: 1px solid var(--line-2);
+    border-bottom: 1px solid var(--line-2);
+    margin: 0 0 36px;
+  }
+  .stat-num {
+    font-family: var(--font-serif);
+    font-size: clamp(36px, 4.5vw, 52px);
+    font-weight: 500;
+    color: var(--ink-1);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+  .stat-caption {
+    font-size: 13px;
+    color: var(--ink-3);
+    line-height: 1.45;
+    margin-top: 10px;
+    max-width: 180px;
+  }
+  .stat-source {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-4);
+    letter-spacing: 0.06em;
+    margin-top: 8px;
+  }
+  @media (max-width: 720px) {
+    .stat-strip { grid-template-columns: 1fr; gap: 24px; padding: 24px 0; }
+  }
+
+  /* Sealed record artefact section */
+  .artefact-section {
+    background: var(--paper);
+  }
+  .artefact-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 40px;
+    align-items: start;
+    margin-top: 32px;
+  }
+  @media (max-width: 720px) {
+    .artefact-grid { grid-template-columns: 1fr; gap: 28px; }
+  }
+  .artefact-card {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 24px 26px;
+  }
+  .artefact-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--paper-2);
+  }
+  .artefact-header-overline {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--signal);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .artefact-header-title {
+    font-family: var(--font-serif);
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--ink-1);
+  }
+  .artefact-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 28px;
+    margin-bottom: 16px;
+  }
+  .artefact-field-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .artefact-field-value {
+    font-size: 13px;
+    color: var(--ink-1);
+    font-weight: 500;
+  }
+  .artefact-field-value.mono {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+  }
+  /* Hash signature — the standout. Subtle teal-tinted band. */
+  .artefact-hash {
+    margin-top: 4px;
+    padding: 14px 16px;
+    background: var(--signal-t);
+    border: 1px solid rgba(15, 110, 86, 0.2);
+    border-radius: 8px;
+    position: relative;
+  }
+  .artefact-hash-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--signal);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .artefact-hash-seal {
+    width: 12px;
+    height: 12px;
+    color: var(--signal);
+    flex-shrink: 0;
+  }
+  .artefact-hash-value {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-1);
+    letter-spacing: 0.02em;
+    word-break: break-all;
+    line-height: 1.4;
+  }
+  .artefact-prose p {
+    font-size: 15px;
+    color: var(--ink-2);
+    line-height: 1.65;
+    margin-bottom: 14px;
+  }
+  .artefact-prose p:last-child {
+    color: var(--ink-1);
+    font-weight: 500;
+    margin-bottom: 0;
+  }
+
+  /* PLOT PASSPORT — the lifecycle record */
+  .passport-section {
+    background: var(--paper);
+    border-top: 1px solid var(--line);
+  }
+  .passport-lede {
+    font-size: clamp(17px, 1.6vw, 19px);
+    color: var(--ink-2);
+    line-height: 1.65;
+    max-width: 740px;
+    margin-bottom: 36px;
+  }
+  .passport-timeline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin: 0 0 40px;
+    border-top: 1px solid var(--line-2);
+    border-bottom: 1px solid var(--line-2);
+  }
+  .passport-event {
+    padding: 24px 20px;
+    border-right: 1px solid var(--line);
+    position: relative;
+  }
+  .passport-event:last-child {
+    border-right: none;
+  }
+  .passport-event-year {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--signal);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .passport-event-title {
+    font-family: var(--font-serif);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    color: var(--ink-1);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .passport-event-body {
+    font-size: 13px;
+    color: var(--ink-3);
+    line-height: 1.5;
+  }
+  .passport-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    margin-top: 32px;
+  }
+  .passport-prose p {
+    font-size: 15px;
+    color: var(--ink-2);
+    line-height: 1.65;
+    margin-bottom: 14px;
+  }
+  .passport-prose p:last-child {
+    margin-bottom: 0;
+  }
+  .passport-records {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .passport-records-overline {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--signal);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .passport-records-title {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--ink-1);
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--paper-2);
+  }
+  .passport-records-list {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-2);
+    line-height: 1.7;
+  }
+  .passport-records-list span {
+    color: var(--signal);
+    font-weight: 700;
+  }
+  .passport-close {
+    margin-top: 36px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line-2);
+    font-family: var(--font-serif);
+    font-size: clamp(17px, 2.2vw, 21px);
+    font-weight: 500;
+    line-height: 1.45;
+    letter-spacing: -0.015em;
+    color: var(--ink-1);
+    max-width: 800px;
+  }
+  @media (max-width: 720px) {
+    .passport-timeline { grid-template-columns: 1fr 1fr; }
+    .passport-event { border-right: none; border-bottom: 1px solid var(--line); }
+    .passport-event:nth-child(even) { border-right: none; }
+    .passport-grid { grid-template-columns: 1fr; gap: 28px; }
+  }
+
+  /* FRAMEWORKS — already required, increasingly required */
+  .frameworks-section {
+    background: var(--paper-2);
+  }
+  .frameworks-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    margin-top: 36px;
+    align-items: start;
+  }
+  .frameworks-col-overline {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--signal);
+    font-weight: 700;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line-2);
+  }
+  .framework-item {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .framework-item:last-child {
+    border-bottom: none;
+  }
+  .framework-item-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--ink-4);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .framework-item-title {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    color: var(--ink-1);
+    margin-bottom: 8px;
+  }
+  .framework-item-body {
+    font-size: 14px;
+    color: var(--ink-2);
+    line-height: 1.55;
+  }
+  .frameworks-close {
+    margin-top: 36px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line-2);
+    font-family: var(--font-serif);
+    font-size: clamp(18px, 2.4vw, 22px);
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: -0.015em;
+    color: var(--ink-1);
+    max-width: 780px;
+  }
+  @media (max-width: 720px) {
+    .frameworks-grid { grid-template-columns: 1fr; gap: 32px; }
+  }
+  .why-card {
+    border-left: 3px solid var(--signal);
+    padding-left: 18px;
+  }
+  .why-card-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--signal);
+    margin-bottom: 8px;
+  }
+  .why-card-title {
+    font-family: var(--font-serif);
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--ink-1);
+    margin-bottom: 10px;
+  }
+  .why-card-body {
+    font-size: 14px;
+    color: var(--ink-2);
+    line-height: 1.55;
+  }
+
+  /* Try-demo scale signal */
+  .scale-signal {
+    margin-bottom: 24px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* FUNNEL section — what exists, what's missing */
+  .funnel-section {
+    background: var(--paper);
+  }
+  .funnel-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+    margin-top: 32px;
+  }
+  .funnel-text {
+    min-width: 0;
+  }
+  .funnel-text p {
+    font-size: 16px;
+    color: var(--ink-2);
+    line-height: 1.6;
+    margin-bottom: 18px;
+    max-width: 480px;
+  }
+  .funnel-text p strong {
+    color: var(--ink-1);
+    font-weight: 600;
+  }
+  .funnel-close {
+    font-size: 17px !important;
+    color: var(--ink-1) !important;
+    font-weight: 500 !important;
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+    margin-top: 26px !important;
+  }
+
+  /* Funnel diagram — three stacked tiers */
+  .funnel-vis {
+    position: relative;
+    padding: 12px 0;
+  }
+  .funnel-tier {
+    background: white;
+    border: 1px solid var(--line);
+    padding: 18px 22px;
+    margin: 0 auto 4px;
+    border-radius: 4px;
+    position: relative;
+  }
+  .funnel-tier-1 {
+    width: 100%;
+  }
+  .funnel-tier-2 {
+    width: 78%;
+  }
+  .funnel-tier-3 {
+    width: 56%;
+    background: var(--ink-1);
+    color: var(--paper);
+    border-color: var(--ink-1);
+  }
+  .funnel-tier-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    color: var(--ink-3);
+    margin-bottom: 4px;
+  }
+  .funnel-tier-3 .funnel-tier-tag {
+    color: rgba(255,255,255,0.5);
+  }
+  .funnel-tier-title {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: var(--ink-1);
+    margin-bottom: 6px;
+  }
+  .funnel-tier-3 .funnel-tier-title {
+    color: var(--paper);
+  }
+  .funnel-tier-list {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+  }
+  .funnel-tier-3 .funnel-tier-list {
+    color: rgba(255,255,255,0.6);
+  }
+  .funnel-arrow {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    background: var(--line-2);
+  }
+  .funnel-arrow-1 {
+    top: -14px;
+    height: 14px;
+  }
+  .funnel-flow-label {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--line-2);
+  }
+  .funnel-flow-label strong {
+    color: var(--signal);
+    font-weight: 700;
+  }
+
+  @media (max-width: 720px) {
+    .funnel-grid { grid-template-columns: 1fr; gap: 32px; }
+    .funnel-tier-2 { width: 88%; }
+    .funnel-tier-3 { width: 70%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a href="/" class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21zM10.6 15.4l-3.2-3.2 1.4-1.4 1.8 1.8 4.6-4.6 1.4 1.4-6 6z" clip-rule="evenodd"/></svg>
+      <span class="brand-name">BuildProof</span>
+    </a>
+    <a href="demo.html" class="header-cta">Try the demo →</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-text">
+        <div class="overline hero-eyebrow">An evidence layer for construction</div>
+        <h1 class="display hero-headline">Construction's only honest protection.</h1>
+        <p class="hero-sub">
+          Dispute-grade evidence, sealed at capture. Verified by payment. Owned by you forever.
+          <em>BuildProof is the evidence layer for tradespeople, foremen, QSs, developers, and homeowners — the only form of protection that survives when things go wrong.</em>
+        </p>
+        <div class="hero-ctas">
+          <a href="demo.html" class="btn btn-primary">Try the demo →</a>
+          <a href="#how-it-works" class="btn btn-secondary">How it works ↓</a>
+        </div>
+      </div>
+
+      <div class="hero-phone-wrap">
+        <div class="phone phone-hero">
+          <div class="phone-screen">
+            <div class="phone-notch"></div>
+            <div class="phone-status">
+              <span>9:41</span>
+              <div class="phone-status-right">
+                <span>●●●●</span>
+                <span>5G</span>
+                <span>87</span>
+              </div>
+            </div>
+            <div class="phone-content">
+              <div class="ph-screen-id">C · Capture</div>
+              <div class="ph-back">← Flat 504</div>
+              <div class="ph-overline">Capturing now</div>
+              <div class="ph-title">Cavity barrier</div>
+              <div class="ph-sub">EAST WALL · BRE-DWG-0023 REV C</div>
+
+              <div class="ph-photo-grid">
+                <div class="ph-photo"><span class="ph-photo-tag">1</span></div>
+                <div class="ph-photo"><span class="ph-photo-tag">2</span></div>
+                <div class="ph-photo"><span class="ph-photo-tag">3</span></div>
+                <div class="ph-photo" style="background: linear-gradient(135deg, #f1ede4, #d8d2c0); border: 1px dashed var(--line-2);"><span class="ph-photo-tag" style="background: var(--ink-3); color: white;">+</span></div>
+              </div>
+
+              <div class="ph-card">
+                <div class="ph-meta-row">
+                  <span class="ph-meta-label">Sealed</span>
+                  <span class="ph-meta-val">14:32 · GPS lock</span>
+                </div>
+                <div class="ph-meta-row">
+                  <span class="ph-meta-label">Product</span>
+                  <span class="ph-meta-val">Hilti CP 643N</span>
+                </div>
+                <div class="ph-meta-row">
+                  <span class="ph-meta-label">Operative</span>
+                  <span class="ph-meta-val">D. Patel</span>
+                </div>
+              </div>
+
+              <div class="ph-cta">Save record</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="problem">
+  <div class="wrap">
+    <div class="overline section-eyebrow">The problem</div>
+    <h2 class="display problem-headline">Right now, construction evidence happens in WhatsApp.</h2>
+
+    <div class="problem-grid">
+      <div>
+        <p class="problem-body">
+          Photos get lost in threads. Variations get verbally agreed and forgotten. Site-audit tools capture inspections but don't link to the work that produced them. When something goes wrong years later — a dispute, a defect, a regulator's inquiry — the side without evidence loses.
+        </p>
+        <p class="problem-close">
+          Photos on a phone aren't evidence. They're hope. The construction industry deserves better.
+        </p>
+      </div>
+
+      <div class="chat-mock">
+        <div class="chat-header">
+          <div class="chat-avatar">SW</div>
+          <div class="chat-header-text">
+            <div class="chat-header-title">Site WhatsApp</div>
+            <div class="chat-header-meta">14 members · You, Mark, Tony, Dave +11</div>
+          </div>
+        </div>
+
+        <div class="chat-body">
+          <div class="chat-bubble chat-bubble-them">
+            <div class="chat-bubble-name chat-bubble-name-1">Mark (QS)</div>
+            <div class="chat-bubble-text">Building Control are coming Monday. Need photos of every cavity barrier.</div>
+            <div class="chat-bubble-time">14:02</div>
+          </div>
+
+          <div class="chat-bubble chat-bubble-them">
+            <div class="chat-bubble-name chat-bubble-name-2">Tony (Site)</div>
+            <div class="chat-bubble-text">All in the group chat from last month I think</div>
+            <div class="chat-bubble-time">14:18</div>
+          </div>
+
+          <div class="chat-bubble chat-bubble-them">
+            <div class="chat-bubble-name chat-bubble-name-1">Mark (QS)</div>
+            <div class="chat-bubble-text">Can't find them. Which thread?</div>
+            <div class="chat-bubble-time">14:21</div>
+          </div>
+
+          <div class="chat-bubble chat-bubble-them">
+            <div class="chat-bubble-name chat-bubble-name-3">Dave</div>
+            <div class="chat-bubble-text">Pretty sure I sent flat 14, 16, 22. Maybe more.</div>
+            <div class="chat-bubble-time">14:34</div>
+          </div>
+
+          <div class="chat-bubble chat-bubble-them chat-bubble-emphasis">
+            <div class="chat-bubble-name chat-bubble-name-1">Mark (QS)</div>
+            <div class="chat-bubble-text"><strong>Where are the photos of flat 28 being sprayed?</strong></div>
+            <div class="chat-bubble-time">14:47</div>
+          </div>
+
+          <div class="chat-pending">No reply. Friday, 4:53 PM.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FUNNEL — what exists, what's missing -->
+<section class="funnel-section">
+  <div class="wrap">
+    <div class="overline section-eyebrow">What exists, what's missing</div>
+    <h2 class="display section-headline">The industry already has software. Just not where it counts.</h2>
+
+    <div class="funnel-grid">
+      <div class="funnel-text">
+        <p>
+          <strong>Top-of-funnel software exists.</strong> Zutec, Asite, and similar platforms manage asset registers, digital handover, and compliance reporting. They're built for the developer's records — what gets handed over once a building is finished.
+        </p>
+        <p>
+          <strong>Mid-funnel software exists.</strong> SiteAuditPro, Procore, and similar tools cover project management and audit packs. They're built for the office side of construction — coordinating, reporting, signing off.
+        </p>
+        <p>
+          <strong>Nothing exists at the bottom.</strong> The crucial moment — what was actually built, by whom, against which drawing, with which product — happens at the work face. Today that data lives on phones, in WhatsApp, in someone's head. Then it tries to flow up to the systems that were meant to receive it.
+        </p>
+        <p class="funnel-close">
+          BuildProof is the bottom of the funnel. Capture at source. Everything downstream depends on it.
+        </p>
+      </div>
+
+      <div class="funnel-vis">
+        <div class="funnel-tier funnel-tier-1">
+          <div class="funnel-tier-tag">Top of funnel</div>
+          <div class="funnel-tier-title">Asset registers · Digital handover · Compliance</div>
+          <div class="funnel-tier-list">Zutec · Asite</div>
+        </div>
+        <div class="funnel-tier funnel-tier-2">
+          <div class="funnel-arrow funnel-arrow-1"></div>
+          <div class="funnel-tier-tag">Middle</div>
+          <div class="funnel-tier-title">Project management · Audit packs</div>
+          <div class="funnel-tier-list">SiteAuditPro · Procore</div>
+        </div>
+        <div class="funnel-tier funnel-tier-3">
+          <div class="funnel-arrow funnel-arrow-1" style="background: rgba(255,255,255,0.3);"></div>
+          <div class="funnel-tier-tag">Bottom · Where evidence is created</div>
+          <div class="funnel-tier-title">Capture at the work face</div>
+          <div class="funnel-tier-list">BuildProof</div>
+        </div>
+        <div class="funnel-flow-label">
+          Evidence flows up. <strong>Whoever owns capture owns the data.</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works">
+  <div class="wrap">
+    <div class="overline section-eyebrow">How it works</div>
+    <h2 class="display section-headline">Three steps. One auditable channel.</h2>
+    <div class="steps-with-phones">
+
+      <!-- Step 01 — Capture -->
+      <div class="step-with-phone">
+        <div class="phone phone-mini">
+          <div class="phone-screen">
+            <div class="phone-notch"></div>
+            <div class="phone-status">
+              <span>9:41</span>
+              <div class="phone-status-right"><span>5G</span><span>87</span></div>
+            </div>
+            <div class="phone-content">
+              <div class="ph-overline">Now capturing</div>
+              <div class="ph-title" style="font-size:15px;">Cavity barrier</div>
+              <div class="ph-sub" style="font-size:8px;">EAST WALL · DWG-0023</div>
+              <div class="ph-photo-grid" style="margin-top:8px;">
+                <div class="ph-photo"></div>
+                <div class="ph-photo"></div>
+                <div class="ph-photo"></div>
+                <div class="ph-photo" style="background:linear-gradient(135deg,#f1ede4,#d8d2c0);border:1px dashed var(--line-2);"></div>
+              </div>
+              <div class="ph-card" style="padding:8px 10px;">
+                <div class="ph-meta-row" style="font-size:8px;">
+                  <span class="ph-meta-label">Sealed</span>
+                  <span class="ph-meta-val">14:32</span>
+                </div>
+                <div class="ph-meta-row" style="font-size:8px;">
+                  <span class="ph-meta-label">GPS</span>
+                  <span class="ph-meta-val">locked</span>
+                </div>
+              </div>
+              <div class="ph-cta" style="padding:8px;font-size:10px;">Save record</div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">01 — Capture</div>
+          <div class="step-title">A tradesperson photographs work as it's done.</div>
+          <p class="step-body">
+            Each photo sealed with the time, the location, the drawing reference, and the product used. Once captured, it cannot be edited or deleted.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 02 — Aggregate -->
+      <div class="step-with-phone">
+        <div class="phone phone-mini">
+          <div class="phone-screen">
+            <div class="phone-notch"></div>
+            <div class="phone-status">
+              <span>9:41</span>
+              <div class="phone-status-right"><span>5G</span><span>87</span></div>
+            </div>
+            <div class="phone-content">
+              <div class="ph-overline">Compose pack</div>
+              <div class="ph-title" style="font-size:15px;">Holly Building</div>
+              <div class="ph-sub" style="font-size:8px;">23 RECORDS · 4 OPERATIVES</div>
+              <div style="margin-top:10px;">
+                <div class="ph-card" style="padding:7px 9px;display:flex;align-items:center;gap:6px;border-left:2px solid var(--signal);">
+                  <span class="ph-dot"></span>
+                  <div style="flex:1;font-size:9px;color:var(--ink-1);font-weight:500;">Flat 504 · cavity</div>
+                  <span class="mono" style="font-size:7px;color:var(--ink-3);">8</span>
+                </div>
+                <div class="ph-card" style="padding:7px 9px;display:flex;align-items:center;gap:6px;border-left:2px solid var(--signal);">
+                  <span class="ph-dot"></span>
+                  <div style="flex:1;font-size:9px;color:var(--ink-1);font-weight:500;">Flat 506 · stop seal</div>
+                  <span class="mono" style="font-size:7px;color:var(--ink-3);">6</span>
+                </div>
+                <div class="ph-card" style="padding:7px 9px;display:flex;align-items:center;gap:6px;border-left:2px solid var(--signal);">
+                  <span class="ph-dot"></span>
+                  <div style="flex:1;font-size:9px;color:var(--ink-1);font-weight:500;">Flat 508 · collar</div>
+                  <span class="mono" style="font-size:7px;color:var(--ink-3);">5</span>
+                </div>
+                <div class="ph-card" style="padding:7px 9px;display:flex;align-items:center;gap:6px;border-left:2px solid var(--warn);">
+                  <span style="width:6px;height:6px;border-radius:3px;background:var(--warn);"></span>
+                  <div style="flex:1;font-size:9px;color:var(--ink-1);font-weight:500;">SI-217 variation</div>
+                  <span class="mono" style="font-size:7px;color:var(--ink-3);">4</span>
+                </div>
+              </div>
+              <div class="ph-cta" style="padding:8px;font-size:10px;margin-top:10px;">Send to Sarah</div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">02 — Aggregate</div>
+          <div class="step-title">A foreman bundles records into structured packs.</div>
+          <p class="step-body">
+            Operatives, variations, drawings, and site instructions all flow through one auditable channel. WhatsApp chaos becomes a Golden Thread.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 03 — Approve -->
+      <div class="step-with-phone">
+        <div class="phone phone-mini">
+          <div class="phone-screen">
+            <div class="phone-notch"></div>
+            <div class="phone-status">
+              <span>9:41</span>
+              <div class="phone-status-right"><span>5G</span><span>87</span></div>
+            </div>
+            <div class="phone-content">
+              <div class="ph-overline" style="color:var(--warn);">Pending review</div>
+              <div class="ph-title" style="font-size:15px;">Holly · Pack #482</div>
+              <div class="ph-sub" style="font-size:8px;">23 RECORDS · £18,400</div>
+
+              <div class="ph-card" style="padding:9px 11px;margin-top:10px;">
+                <div class="mono" style="font-size:7px;color:var(--ink-4);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:4px;">Audit chain</div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--signal)" fill-rule="evenodd"><path d="M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21zM10.6 15.4l-3.2-3.2 1.4-1.4 1.8 1.8 4.6-4.6 1.4 1.4-6 6z" clip-rule="evenodd"/></svg>
+                  <span style="font-size:9px;color:var(--ink-1);font-weight:600;">Sealed · verified</span>
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:14px;">
+                <div style="background:var(--ink-1);color:white;text-align:center;padding:9px;border-radius:8px;font-size:10px;font-weight:600;">Approve</div>
+                <div style="background:transparent;color:var(--ink-1);text-align:center;padding:9px;border-radius:8px;font-size:10px;font-weight:600;border:1px solid var(--line-2);">Query</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">03 — Approve</div>
+          <div class="step-title">A QS, developer, or homeowner approves payment.</div>
+          <p class="step-body">
+            Or queries a specific record without losing the structure. Every exchange is logged against the original work.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="operative-callout">
+      <div class="operative-callout-label">
+        Designed at the<br>work face
+      </div>
+      <div class="operative-callout-body">
+        <strong>Capture is built for operatives, not inspectors.</strong> Drawings, products, and locations are pre-loaded against the day's work, so an operative doesn't have to type, search, or remember anything to capture a record correctly. Single sign-in per shift. Structured prompts mean the same trusted evidence comes back from every job, every operative, every time — without training, without forms, without paperwork at the end of the day.
+      </div>
+    </div>
+
+    <p class="steps-close">
+      The result is a sealed, immutable record of what was done — survivable across firms, time, and disputes.
+    </p>
+  </div>
+</section>
+
+<!-- WHY THIS MATTERS NOW -->
+<section class="why-now">
+  <div class="wrap">
+    <div class="overline section-eyebrow">Why this matters now</div>
+    <h2 class="display section-headline">The problem keeps getting bigger. Legislation keeps stalling.</h2>
+    <div class="why-now-prose">
+      <p>
+        The Federation of Master Builders has campaigned for mandatory builder licensing since 2019. The HomeOwners Alliance has backed it. 78% of consumers want it. Five years and multiple Private Members' Bills later, it still hasn't passed.
+      </p>
+      <p>
+        Meanwhile, cowboy builders cost UK homeowners an estimated £3.5 billion a year. The Building Safety Act now puts personal liability on developers for evidence retention. Government retrofit schemes have been overrun by rogue traders. Trustpilot and Checkatrade reviews have lost public confidence.
+      </p>
+    </div>
+
+    <div class="stat-strip">
+      <div>
+        <div class="stat-num">£3.5bn</div>
+        <div class="stat-caption">Annual cost of cowboy builders to UK homeowners.</div>
+        <div class="stat-source">CTSI · 2025</div>
+      </div>
+      <div>
+        <div class="stat-num">78%</div>
+        <div class="stat-caption">Of consumers want mandatory builder licensing.</div>
+        <div class="stat-source">FMB Research</div>
+      </div>
+      <div>
+        <div class="stat-num">5 yrs</div>
+        <div class="stat-caption">Of stalled licensing legislation. The harm continues.</div>
+        <div class="stat-source">FMB · 2019–2025</div>
+      </div>
+    </div>
+
+    <div class="why-now-callout">
+      <p class="why-now-callout-bold">Licensing assesses entry. BuildProof assesses ongoing performance.</p>
+      <p class="why-now-callout-body">
+        Both protect consumers. Only one works regardless of legislation — capturing what actually gets built, by whom, against which standards, available the moment a dispute, audit, or regulator asks.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- PROTECTION (the manifesto) -->
+<section class="protection">
+  <div class="wrap">
+    <div class="overline section-eyebrow">What protects you when nothing else can</div>
+    <h2 class="display protection-headline">Every other protection in construction depends on evidence to actually work.</h2>
+
+    <div class="protection-list">
+      <div class="protection-item">
+        <div class="protection-claim">Contracts protect on paper.</div>
+        <div class="protection-resolve">They only matter if you can prove what happened. Without evidence, contracts are just intentions.</div>
+      </div>
+      <div class="protection-item">
+        <div class="protection-claim">Insurance pays out on established claims.</div>
+        <div class="protection-resolve">Establishing a claim requires evidence. Without it, your policy is goodwill, not protection.</div>
+      </div>
+      <div class="protection-item">
+        <div class="protection-claim">Reviews can be bought, faked, or extorted.</div>
+        <div class="protection-resolve">They tell you what someone said — not what was done. They reduce information; they don't create trust.</div>
+      </div>
+      <div class="protection-item">
+        <div class="protection-claim">Building control signs off in moments.</div>
+        <div class="protection-resolve">Most construction happens between those moments. Inspections capture endpoints, not the work that fills the gaps.</div>
+      </div>
+    </div>
+
+    <div class="pull-quote">
+      <p class="pull-quote-text">"Protect against defective work — before it becomes someone's problem."</p>
+    </div>
+
+    <div class="protection-conclusion">
+      <p class="protection-conclusion-bold">Evidence is the only protection that survives a dispute, an audit, or a regulator.</p>
+      <p class="protection-conclusion-body">
+        It's the substrate every other protection rests on. Without it, contracts are intentions and insurance is goodwill. BuildProof is the system that produces it — at scale, automatically, in the moment of work.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SEALED RECORD ARTEFACT -->
+<section class="artefact-section">
+  <div class="wrap">
+    <div class="overline section-eyebrow">A single record</div>
+    <h2 class="display section-headline">This is what dispute-grade evidence looks like.</h2>
+
+    <div class="artefact-grid">
+
+      <div class="artefact-card">
+        <div class="artefact-header">
+          <div>
+            <div class="artefact-header-overline">Sealed record</div>
+            <div class="artefact-header-title">Cavity barrier · East wall</div>
+          </div>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--signal)" fill-rule="evenodd"><path d="M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21zM10.6 15.4l-3.2-3.2 1.4-1.4 1.8 1.8 4.6-4.6 1.4 1.4-6 6z" clip-rule="evenodd"/></svg>
+        </div>
+
+        <div class="artefact-fields">
+          <div>
+            <div class="artefact-field-label">Captured</div>
+            <div class="artefact-field-value">14:32 · 2 May 2026</div>
+          </div>
+          <div>
+            <div class="artefact-field-label">GPS</div>
+            <div class="artefact-field-value mono">51.5074°N · 0.1278°W</div>
+          </div>
+          <div>
+            <div class="artefact-field-label">Drawing</div>
+            <div class="artefact-field-value mono">BRE-DWG-0023 Rev C</div>
+          </div>
+          <div>
+            <div class="artefact-field-label">Product</div>
+            <div class="artefact-field-value">Hilti CP 643N</div>
+          </div>
+          <div>
+            <div class="artefact-field-label">Operative</div>
+            <div class="artefact-field-value">D. Patel · CSCS-7782</div>
+          </div>
+          <div>
+            <div class="artefact-field-label">Photos</div>
+            <div class="artefact-field-value">4 sealed</div>
+          </div>
+        </div>
+
+        <div class="artefact-hash">
+          <div class="artefact-hash-label">
+            <svg class="artefact-hash-seal" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21zM10.6 15.4l-3.2-3.2 1.4-1.4 1.8 1.8 4.6-4.6 1.4 1.4-6 6z" clip-rule="evenodd"/></svg>
+            <span>Hash signature · the seal</span>
+          </div>
+          <div class="artefact-hash-value">a8f3 7c2e 4d91 b5f6 · 8e2a 1c4d 9b3f 5e7c · prev: 6f1d 9c2b…</div>
+        </div>
+      </div>
+
+      <div class="artefact-prose">
+        <p>
+          Each record contains the full forensic context of the work captured. Sealed at the moment of capture with a cryptographic hash that chains back to the previous record on this project.
+        </p>
+        <p>
+          No record can be edited, deleted, or back-dated without breaking the chain — and a broken chain is itself evidence.
+        </p>
+        <p>
+          In a dispute six years from now, this record is the difference between "I think we did this" and "here is exactly what we did, sealed before the work was finished, signed cryptographically." That's what makes a BuildProof record defensible in a way a phone photo never can be.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PLOT PASSPORT — the lifecycle record -->
+<section class="passport-section">
+  <div class="wrap">
+    <div class="overline section-eyebrow">Every plot, a passport</div>
+    <h2 class="display section-headline">From completion to disposal, decades of evidence.</h2>
+
+    <p class="passport-lede">
+      Every record sealed against a plot becomes part of that plot's permanent passport. New build today. Retrofit in 2031. Defect repair in 2037. Sale in 2042. Each event adds to the same record — signed by the people who did the work, sealed against the drawings of the day, with the products they used and the operatives who installed them.
+    </p>
+
+    <div class="passport-timeline">
+      <div class="passport-event">
+        <div class="passport-event-year">2026 · Year 0</div>
+        <div class="passport-event-title">New build completion</div>
+        <div class="passport-event-body">Every cavity barrier, every fire-stop, every product batch sealed at install.</div>
+      </div>
+      <div class="passport-event">
+        <div class="passport-event-year">2031 · Year 5</div>
+        <div class="passport-event-title">Retrofit · heat pump</div>
+        <div class="passport-event-body">Installer reads the original passport. Adds new records to the same plot.</div>
+      </div>
+      <div class="passport-event">
+        <div class="passport-event-year">2037 · Year 11</div>
+        <div class="passport-event-title">Defect investigation</div>
+        <div class="passport-event-body">Damp claim. Passport shows the cavity barrier, the date, the operative, the product.</div>
+      </div>
+      <div class="passport-event">
+        <div class="passport-event-year">2042 · Year 16</div>
+        <div class="passport-event-title">Sale</div>
+        <div class="passport-event-body">Buyer's solicitor reviews the full passport. Insurance discount applies.</div>
+      </div>
+    </div>
+
+    <div class="passport-grid">
+      <div class="passport-prose">
+        <p>
+          A flat sold with a BuildProof passport is more valuable than one without. A retrofit done against a plot's passport is faster and cheaper because the original construction is documented. A defect investigated against a passport is settled in days, not years.
+        </p>
+        <p>
+          The passport accumulates everything that matters: which products were used, which operatives installed them, which drawings were referenced, which inspections passed, which payments were released. Decades of evidence, all chained to the plot itself — not to any one firm, not to any one job.
+        </p>
+        <p>
+          Firms come and go. The passport stays.
+        </p>
+      </div>
+
+      <div class="passport-records">
+        <div class="passport-records-overline">What the passport records</div>
+        <div class="passport-records-title">Plot 504 · Holly Building</div>
+        <div class="passport-records-list">
+          <span>Drawings</span> · referenced revisions, including supersedes<br>
+          <span>Products</span> · batch numbers, datasheets, certificates<br>
+          <span>Operatives</span> · CSCS card, qualification at time of install<br>
+          <span>Inspections</span> · who signed, against which standard<br>
+          <span>Photos</span> · sealed at capture, GPS-tagged<br>
+          <span>Payments</span> · which records released which payments<br>
+          <span>Variations</span> · what changed, when, why, who approved<br>
+          <span>Defects</span> · history of any claims, investigations, repairs
+        </div>
+      </div>
+    </div>
+
+    <p class="passport-close">
+      The Building Safety Act calls this a Golden Thread. The Defective Premises Act extends liability to thirty years. BuildProof produces both — by default, every plot, every job.
+    </p>
+  </div>
+</section>
+
+<!-- FRAMEWORKS — already required, increasingly required -->
+<section class="frameworks-section">
+  <div class="wrap">
+    <div class="overline section-eyebrow">Where this matters most</div>
+    <h2 class="display section-headline">Already required. Increasingly required.</h2>
+
+    <div class="frameworks-grid">
+
+      <div>
+        <div class="frameworks-col-overline">The regulations driving change</div>
+
+        <div class="framework-item">
+          <div class="framework-item-tag">2022 · Building Safety Act</div>
+          <div class="framework-item-title">Duty holders must retain a Golden Thread of structured, traceable records.</div>
+          <p class="framework-item-body">
+            Personal liability on developers and building owners. Records held for the lifetime of higher-risk buildings.
+          </p>
+        </div>
+
+        <div class="framework-item">
+          <div class="framework-item-tag">2025 · Awaab's Law</div>
+          <div class="framework-item-title">Social landlords must investigate and resolve hazards within strict statutory timeframes — and document every step.</div>
+          <p class="framework-item-body">
+            Damp and mould today. Excess cold, falls, structural collapse, fire, and electrical hazards from 2026. Records of every contractor visit, every action, every outcome are mandated by law.
+          </p>
+        </div>
+
+        <div class="framework-item">
+          <div class="framework-item-tag">2015 · CDM Regulations</div>
+          <div class="framework-item-title">Records of competence, decisions, and changes throughout a project.</div>
+          <p class="framework-item-body">
+            The duty-holder framework that underpins every UK construction site. Evidence is the only thing that demonstrates compliance.
+          </p>
+        </div>
+
+        <div class="framework-item">
+          <div class="framework-item-tag">Extended 2022 · Defective Premises Act</div>
+          <div class="framework-item-title">Defect liability now runs to 30 years on new builds.</div>
+          <p class="framework-item-body">
+            Evidence held today must hold up three decades from now. Phone photos and WhatsApp threads will not survive that timescale.
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <div class="frameworks-col-overline">The work where evidence is most critical</div>
+
+        <div class="framework-item">
+          <div class="framework-item-tag">Active programme</div>
+          <div class="framework-item-title">Fire safety remediation</div>
+          <p class="framework-item-body">
+            Post-Grenfell legislation. FRA defect work, fire-stopping, cavity barriers, intumescent products. Every intervention must be defensible against future scrutiny.
+          </p>
+        </div>
+
+        <div class="framework-item">
+          <div class="framework-item-tag">Active programme</div>
+          <div class="framework-item-title">Cladding remediation</div>
+          <p class="framework-item-body">
+            Multi-billion-pound work programme under government oversight. Records needed for insurance, leaseholder protection, and future asset sale. Every record sealed at capture.
+          </p>
+        </div>
+
+        <div class="framework-item">
+          <div class="framework-item-tag">Active programme</div>
+          <div class="framework-item-title">Retrofit and energy efficiency</div>
+          <p class="framework-item-body">
+            Warm Homes Plan, ECO scheme, heat pump installation, insulation works. Government schemes have been overrun by rogue traders. Evidence is the difference between funded work and reclaimed grants.
+          </p>
+        </div>
+
+        <div class="framework-item">
+          <div class="framework-item-tag">Active programme</div>
+          <div class="framework-item-title">Social housing repairs and maintenance</div>
+          <p class="framework-item-body">
+            Four million social rented homes in England now under Awaab's Law. Every contractor visit must be documented to defensible standard, within statutory timeframes.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <p class="frameworks-close">
+      BuildProof produces what these frameworks already require, and what these work programmes actually need. The next wave of regulation — including any future licensing scheme — will demand more of the same.
+    </p>
+  </div>
+</section>
+
+<!-- TRACK RECORD CLAIM -->
+<section class="track-record">
+  <div class="wrap">
+    <div class="overline section-eyebrow">A genuine way to assess builders</div>
+    <h2 class="display track-record-headline">The first construction track record built on completed, paid work.</h2>
+    <p class="track-record-body">
+      Every other tool relies on signals that can be faked or staled. Checkatrade reviews. MyBuilder testimonials. Word of mouth. Licences verified once and never re-checked. All gameable, all ultimately untrustworthy.
+    </p>
+
+    <p class="tr-licensing-quote">"A licence is verified once. A BuildProof track record is verified every job."</p>
+
+    <p class="track-record-body">
+      BuildProof tracks completed work verified by payment. Not stars. Not testimonials. Just the projects a builder actually finished, the payments those projects actually released, and the audit trail those records actually leave behind.
+    </p>
+    <p class="track-record-strong">
+      A tradesperson's BuildProof record is what they've done — not what they claim, and not what someone said about them. It's the foundation for industry-wide accreditation that means something. Insurance discounts, procurement preferences, regulatory recognition — all built on evidence rather than opinion.
+    </p>
+
+    <div class="pull-quote">
+      <p class="pull-quote-text">"Work with builders whose track record exists because the work did."</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHO IT'S FOR -->
+<section class="roles">
+  <div class="wrap">
+    <div class="overline section-eyebrow">Who it's for</div>
+    <h2 class="display section-headline">Five stakeholders. One layer of protection.</h2>
+
+    <!-- Skilled tradespeople -->
+    <div class="role-block">
+      <div class="role-label">
+        <div class="role-overline">For</div>
+        <div class="role-tag">Skilled tradespeople</div>
+      </div>
+      <div>
+        <h3 class="role-question">What protects your reputation when a job goes bad and someone needs to blame someone?</h3>
+        <p class="role-body">
+          Not your word against the QS's. Not photos on your phone the firm can take when you leave. The only protection is a sealed, portable record of every job you've completed — captured at the moment of work, owned by you, never editable.
+        </p>
+        <p class="role-close">
+          Cowboys leave no evidence. You build a verified, payment-backed track record they can never match. Real tradespeople rise. The market rewards what it can verify.
+        </p>
+      </div>
+    </div>
+
+    <!-- Foremen and site managers -->
+    <div class="role-block">
+      <div class="role-label">
+        <div class="role-overline">For</div>
+        <div class="role-tag">Foremen &amp; site managers</div>
+      </div>
+      <div>
+        <h3 class="role-question">What protects you when WhatsApp threads get deleted and your operative leaves the firm?</h3>
+        <p class="role-body">
+          Not your memory. Not a folder of unsorted photos. The only protection is a structured, auditable record of every variation, every site instruction, and every operative's work — visible to you in one place, defensible forever.
+        </p>
+        <p class="role-close">
+          Your team's work becomes a Golden Thread, not a guessing game. The job becomes defensible. Less time chasing photos, more time running the build.
+        </p>
+      </div>
+    </div>
+
+    <!-- QSs / developers -->
+    <div class="role-block">
+      <div class="role-label">
+        <div class="role-overline">For</div>
+        <div class="role-tag">QSs, developers &amp; commercial oversight</div>
+      </div>
+      <div>
+        <h3 class="role-question">What protects you when a building you approved gets investigated five years later?</h3>
+        <p class="role-body">
+          Not your memory. Not the contractor's WhatsApp. Not a building control sign-off from before the work was finished. The only protection is sealed, dated, audit-ready evidence — and BuildProof is the system that produces it, every record, every project.
+        </p>
+        <p class="role-close">
+          Approve payment with evidence, not faith. Vet contractors based on completed projects verified by payment, not reviews you can't trust. Defend your professional record forever, against any future scrutiny. This is what dispute-grade evidence is for.
+        </p>
+      </div>
+    </div>
+
+    <!-- Homeowners -->
+    <div class="role-block">
+      <div class="role-label">
+        <div class="role-overline">For</div>
+        <div class="role-tag">Homeowners</div>
+      </div>
+      <div>
+        <h3 class="role-question">What protects you when a builder vanishes mid-project, or a defect emerges three years later?</h3>
+        <p class="role-body">
+          Not your contract. Not the builder's promises. Not Checkatrade reviews. Not even a licence — that proved competence on the day it was issued, not on the day they walked into your house.
+        </p>
+        <p class="role-body">
+          The only protection is a sealed record of what was actually done, paid for as it was verified, owned by you forever. <strong style="color: var(--ink-1); font-weight: 500;">Licensing tells you who's allowed in. BuildProof tells you who actually delivers</strong> — job after job, payment after payment.
+        </p>
+        <p class="role-close">
+          Pick a builder with a BuildProof track record and you're picking someone whose competence is proven by completed work, not claimed by qualification. Cowboys can't fake completed projects with verified payments. Real builders build verifiable histories.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- TRY DEMO -->
+<section class="try-demo">
+  <div class="wrap">
+    <div class="overline section-eyebrow" style="color: rgba(255,255,255,0.5);">Try it</div>
+    <h2 class="try-demo-headline">No signup. Sample data. Switch perspectives any time.</h2>
+    <p class="try-demo-sub">
+      Walk through the loop as a tradesperson capturing work, a foreman aggregating it, a QS approving it, a homeowner releasing payment. See exactly how evidence flows from site to settlement.
+    </p>
+    <a href="demo.html" class="btn btn-demo">Try the demo →</a>
+    <div class="try-demo-meta">Five minutes · Nothing is sent or stored</div>
+    <div style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,0.12);font-family:var(--font-mono);font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:0.08em;text-transform:uppercase;">
+      Built for the £140bn UK construction sector · Designed for the global one
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="var(--signal)" fill-rule="evenodd"><path d="M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21zM10.6 15.4l-3.2-3.2 1.4-1.4 1.8 1.8 4.6-4.6 1.4 1.4-6 6z" clip-rule="evenodd"/></svg>
+        <span class="footer-tagline">BuildProof — Construction's evidence layer. Made in the United Kingdom.</span>
+      </div>
+      <div class="footer-meta">Early prototype · Built for feedback</div>
+    </div>
+  </div>
+</footer>
+
+
+</body>
+</html>
